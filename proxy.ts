@@ -6,8 +6,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getIdentity } from "@/lib/tidecloak/verify";
 
-/** Person B: add page prefixes here as you build them (e.g. "/home", "/setup"). */
-const PROTECTED_PAGES = ["/protected"];
+const PROTECTED_PAGES = [
+  "/protected",
+  "/home",
+  "/setup",
+  "/circle",
+  "/requests",
+  "/audit",
+  "/demo",
+];
 
 export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -21,5 +28,20 @@ export async function proxy(req: NextRequest) {
 
 // Keep in sync with PROTECTED_PAGES.
 export const config = {
-  matcher: ["/protected", "/protected/:path*"],
+  matcher: [
+    "/protected",
+    "/protected/:path*",
+    "/home",
+    "/home/:path*",
+    "/setup",
+    "/setup/:path*",
+    "/circle",
+    "/circle/:path*",
+    "/requests",
+    "/requests/:path*",
+    "/audit",
+    "/audit/:path*",
+    "/demo",
+    "/demo/:path*",
+  ],
 };

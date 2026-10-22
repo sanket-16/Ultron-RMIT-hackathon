@@ -26,6 +26,24 @@ const check = (label, cond, extra) => {
 // wait for server
 for (let i = 0; i < 60; i++) { try { await fetch(`${BASE}/api/health-auth`); break; } catch { await sleep(1000); } }
 
+// Wipe store so Neon-backed (or leftover) runs start clean
+{
+  const { token } = await login("margaret");
+  const r = await fetch(`${BASE}/api/demo/reset`, {
+    method: "POST",
+    headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+  });
+  if (r.status === 404) {
+    console.error(
+      "POST /api/demo/reset returned 404. Deploy/run the feat/demo-api server with AUTH_MODE=dev and GUARDIAN_ENABLE_TAMPER_DEMO=1 so e2e can clear the store.",
+    );
+    process.exit(1);
+  }
+  const body = await r.json();
+  if (!r.ok) throw new Error(`Demo reset failed: ${JSON.stringify(body)}`);
+  console.log("Demo store reset.");
+}
+
 // everyone signs in once so Margaret can pick them
 const users = {};
 for (const u of ["margaret", "sarah", "james", "helen", "mallory"]) {

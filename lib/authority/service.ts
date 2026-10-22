@@ -1,6 +1,7 @@
 /**
  * Use-cases behind the API routes. Routes stay thin: parse input, call one of these.
  */
+import "@/lib/db/register";
 import {
   CIRCLE_CHANGE,
   type CircleChangeInput,

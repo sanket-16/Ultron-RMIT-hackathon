@@ -1,53 +1,66 @@
-# TideCloak setup (Person A)
+# TideCloak setup
 
-The app runs in **dev mode** until `tidecloak.json` is replaced with a real adapter file.
-Dev mode signs tokens with a local secret so the team can build. Switch to **tide mode** for the demo.
+Skip this while the app is in **dev mode** (one-click demo users). Do this when you want real Tide sign-in.
 
-## 1. Realm and client
+## 1. Start TideCloak (Docker)
 
-Use Tide's MCP in your coding agent, or the [TideCloak Quickstart](https://github.com/tide-foundation/tidecloak-gettingstarted), to start a TideCloak server. Then:
+Docker Desktop on, port 8080 free. From the repo root:
 
-1. Create realm **`guardian-circle`** and turn on Tide (IdP + IGA).
-2. Create client **`guardian-circle-app`**:
-   - Public client (Client authentication **off**), Standard flow **on**.
-   - Valid redirect URIs: `http://localhost:3000/*` (plus your deployed URL).
-     Silent SSO uses `http://localhost:3000/silent-check-sso.html` (already in `public/`).
-   - Web origins: `http://localhost:3000`.
-3. Download the adapter config (Clients → guardian-circle-app → Action → Download adapter config).
-   Save it as `tidecloak.json` in the repo root, replacing the placeholder.
-   Only public client details are in this file, so it's safe to commit.
+```powershell
+@"
+KC_BOOTSTRAP_ADMIN_USERNAME=admin
+KC_BOOTSTRAP_ADMIN_PASSWORD=pick-a-long-random-password
+"@ | Set-Content .\.env.tidecloak
 
-## 2. Roles
+New-Item -ItemType Directory -Force .\data | Out-Null
+Get-Content .\.env.tidecloak | ForEach-Object {
+  if ($_ -match '^(.*?)=(.*)$') { Set-Item -Path "Env:$($matches[1])" -Value $matches[2] }
+}
 
-Create these **realm roles**: `principal`, `circle_member`, `requester`.
+docker pull tideorg/tidecloak-dev:latest
+docker rm -f tidecloak 2>$null
+docker run -d --name tidecloak `
+  -v "${PWD}/data:/opt/keycloak/data/h2" `
+  -p 8080:8080 `
+  -e KC_BOOTSTRAP_ADMIN_USERNAME=$env:KC_BOOTSTRAP_ADMIN_USERNAME `
+  -e KC_BOOTSTRAP_ADMIN_PASSWORD=$env:KC_BOOTSTRAP_ADMIN_PASSWORD `
+  tideorg/tidecloak-dev:latest
+```
 
-| User      | Roles                          |
-| --------- | ------------------------------ |
-| Margaret  | `principal`                    |
-| Sarah     | `circle_member`                |
-| James     | `circle_member`, `requester`   |
-| Helen     | `circle_member`                |
+Wait ~1 min, then open http://localhost:8080 — login `admin` + that password.
 
-Each person signs up through Tide (their key is split across Tide's network, not held by us).
+Don’t append `start-dev` to `docker run`. Don’t commit `.env.tidecloak` or `data/`.
 
-## 3. IGA: role changes need a quorum
+## 2. Realm, client, roles
 
-Turn on **IGA** for the realm. Once it's on, adding or removing `circle_member` creates a change request. That request needs approval from the realm's quorum of Tide admins before it takes effect. To match the story, make the circle members the realm's approvers. Then James can't quietly give his friend the `circle_member` role.
+In the admin UI:
 
-The app treats the `circle_member` role in a **Tide-signed token** as the only proof of membership. A database edit that adds someone to the circle won't help them, because their token won't carry the role.
+1. Realm **`guardian-circle`**. Turn on Tide (IdP) and IGA.
+2. Client **`guardian-circle-app`**: public, standard flow on.  
+   Redirects: `http://localhost:3000/*`  
+   Web origins: `http://localhost:3000`
+3. Realm roles: `principal`, `circle_member`, `requester`.
+4. Clients → guardian-circle-app → Action → **Download adapter config** → save as repo-root `tidecloak.json` (replaces the placeholder). **Commit it** — public client config only.
 
-## 4. Turn on tide mode
+Demo users (sign up via Tide, then assign roles):
 
-```bash
-# .env.local
+| Person   | Roles                        |
+| -------- | ---------------------------- |
+| Margaret | `principal`                  |
+| Sarah    | `circle_member`              |
+| James    | `circle_member`, `requester` |
+| Helen    | `circle_member`              |
+
+## 3. Point the app at it
+
+`.env.local`:
+
+```env
 NEXT_PUBLIC_GUARDIAN_AUTH_MODE=tide
 GUARDIAN_ENABLE_TAMPER_DEMO=1
 ```
 
-Restart `npm run dev`, open `/signin`, sign in as each person once, then use `/protected` as Margaret to set up the circle.
+Restart `npm run dev`. Open `/signin`.  
+`GET /api/health-auth` should show `authMode: "tide"` and `tideConfigured: true`.
 
-Check: `GET /api/health-auth` returns `authMode: "tide"` with the user's roles and `vuid`.
-
-## Optional: DPoP
-
-To bind tokens to the browser, add `"useDPoP": { "mode": "auto" }` to `tidecloak.json` and add the DPoP route (see `node_modules/@tidecloak/nextjs/docs/FRONT_CHANNEL.md#serving-the-dpop-page`). Then a token copied out of the database is useless to anyone else.
+Back to demo users anytime: set `NEXT_PUBLIC_GUARDIAN_AUTH_MODE=dev`.

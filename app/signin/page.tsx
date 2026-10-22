@@ -18,7 +18,7 @@ export default function SignInPage() {
   useEffect(() => {
     if (ready && authenticated) {
       const next = new URLSearchParams(window.location.search).get("next");
-      router.replace(next?.startsWith("/") ? next : "/protected");
+      router.replace(next?.startsWith("/") ? next : "/home");
     }
   }, [ready, authenticated, router]);
 
