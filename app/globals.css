@@ -35,18 +35,20 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-line: var(--line);
-  --font-sans: var(--font-source-sans);
-  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-guardian);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-source-sans), "Segoe UI", sans-serif;
+  font-family: var(--font-guardian), "Segoe UI", sans-serif;
 }
 
+/* Same family as body — display = weight + tracking, not a second face */
 .font-display {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-guardian), "Segoe UI", sans-serif;
+  font-weight: 650;
+  letter-spacing: -0.02em;
 }
 
 .hero-veil {

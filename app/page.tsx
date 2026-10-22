@@ -13,11 +13,11 @@ export default function Home() {
           <div className="absolute inset-0 -z-20 overflow-hidden">
             <Image
               src="/hero-home.jpg"
-              alt="A calm home — big decisions stay with the people who live there"
+              alt="Quiet living room light — a home where careful decisions are made"
               fill
               priority
               sizes="100vw"
-              className="hero-drift object-cover object-[78%_42%] sm:object-[82%_40%]"
+              className="hero-drift object-cover object-[70%_50%]"
             />
           </div>
 
@@ -35,10 +35,10 @@ export default function Home() {
 
           <div className="mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col justify-end px-6 pb-16 pt-24 sm:justify-center sm:px-10 sm:pb-24 sm:pt-20">
             <div className="max-w-lg">
-              <p className="hero-rise font-display text-[clamp(2.75rem,8vw,5.25rem)] leading-[0.95] tracking-[-0.03em] text-foreground">
+              <p className="hero-rise font-display text-[clamp(2.75rem,8vw,5rem)] font-semibold leading-[0.95] tracking-[-0.03em] text-foreground">
                 Guardian Circle
               </p>
-              <h1 className="hero-rise hero-rise-delay-1 mt-6 max-w-md font-display text-[clamp(1.35rem,3.2vw,1.85rem)] font-medium leading-snug tracking-[-0.015em] text-foreground">
+              <h1 className="hero-rise hero-rise-delay-1 mt-6 max-w-md text-[clamp(1.35rem,3.2vw,1.75rem)] font-semibold leading-snug tracking-[-0.02em] text-foreground">
                 Big decisions wait for the people you trust.
               </h1>
               <p className="hero-rise hero-rise-delay-2 mt-4 max-w-md text-base leading-relaxed text-foreground/80 sm:text-lg">

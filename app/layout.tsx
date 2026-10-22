@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import { Fraunces, Source_Sans_3 } from "next/font/google";
+import { Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { GuardianAuthProvider } from "@/lib/tidecloak/client";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  display: "swap",
-});
-
+/** One family for brand + UI — weight and size carry hierarchy. */
 const sourceSans = Source_Sans_3({
-  variable: "--font-source-sans",
+  variable: "--font-guardian",
   subsets: ["latin"],
   display: "swap",
 });
@@ -23,10 +18,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${fraunces.variable} ${sourceSans.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${sourceSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
         <GuardianAuthProvider>{children}</GuardianAuthProvider>
       </body>
