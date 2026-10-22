@@ -37,6 +37,9 @@ All of them need a signed-in user. Errors come back as `{ error, details? }` wit
 | POST | `/api/requests/:id/release` | circle | → `{ released, message, request }`. 403 when not authorised |
 | GET | `/api/audit` | circle | → `{ events: AuditEventView[] }` (newest first) |
 | POST | `/api/demo/tamper` | circle, demo flag on | `{ mode: "votes", requestId }` \| `{ mode: "policy" }` \| `{ mode: "undo" }` |
+| POST | `/api/demo/reset` | any signed-in, demo flag + dev | → `{ ok: true }` (wipes authority store) |
+| POST | `/api/demo/seed` | principal, demo flag + dev | → `{ circle, requests, nextSteps }` (reset + story seed) |
+| GET | `/api/demo/status` | any signed-in | → `{ authMode, tamperEnabled, circle }` |
 | GET/POST/DELETE | `/api/dev/login` | dev mode only | `{ username }` signs in as a demo user |
 
 ## What to show in the UI
