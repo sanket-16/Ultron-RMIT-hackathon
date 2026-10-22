@@ -1,0 +1,9 @@
+{
+  "_placeholder": "Replace this whole file with the adapter JSON downloaded from TideCloak (Clients > guardian-circle > Action > Download adapter config > tidecloak.json). See docs/tidecloak-setup.md.",
+  "realm": "guardian-circle",
+  "auth-server-url": "http://localhost:8080",
+  "ssl-required": "external",
+  "resource": "guardian-circle-app",
+  "public-client": true,
+  "confidential-port": 0
+}
