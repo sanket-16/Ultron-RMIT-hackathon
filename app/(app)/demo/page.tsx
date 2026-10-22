@@ -134,24 +134,24 @@ export default function DemoPage() {
     <section className="flex flex-col gap-6">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">Database tamper demo</h1>
-        <p className="text-xl text-zinc-800">Corrupt the database — funds still stay held.</p>
-        <p className="text-lg text-zinc-600">
+        <p className="text-xl text-foreground">Corrupt the database — funds still stay held.</p>
+        <p className="text-lg text-muted">
           Pretend you are a rogue admin. Edit stored votes or policy rows. Guardian still refuses to
           release money without Tide-signed approvals.
         </p>
       </header>
 
-      {loadError && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{loadError}</p>}
+      {loadError && <p className="rounded-md bg-rose-50 px-4 py-3 text-base text-rose-800">{loadError}</p>}
       {disabledNote && (
-        <p className="rounded-xl bg-amber-50 px-4 py-3 text-base text-amber-950">{disabledNote}</p>
+        <p className="rounded-md bg-amber-50 px-4 py-3 text-base text-amber-950">{disabledNote}</p>
       )}
-      {actionError && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{actionError}</p>}
+      {actionError && <p className="rounded-md bg-rose-50 px-4 py-3 text-base text-rose-800">{actionError}</p>}
 
       <div className="flex flex-col gap-3">
-        <label className="flex flex-col gap-2 text-base text-zinc-800">
+        <label className="flex flex-col gap-2 text-base text-foreground">
           Held request for vote tamper
           <select
-            className="h-14 rounded-xl border border-zinc-300 bg-white px-3 text-lg"
+            className="h-14 rounded-md border border-line bg-surface px-3 text-lg"
             value={selectedId}
             onChange={(e) => setSelectedId(e.target.value)}
             disabled={held.length === 0 || busy !== null}
@@ -169,7 +169,7 @@ export default function DemoPage() {
           </select>
         </label>
         {held.length === 0 && (
-          <p className="text-base text-zinc-600">
+          <p className="text-base text-muted">
             Need a held request first.{" "}
             <Link href="/requests/new" className="text-teal-800 underline">
               Create one
@@ -183,7 +183,7 @@ export default function DemoPage() {
         <button
           type="button"
           disabled={busy !== null || !selectedId}
-          className="h-14 rounded-xl border border-rose-300 bg-rose-50 text-lg text-rose-950 disabled:opacity-50"
+          className="h-14 rounded-md border border-rose-300 bg-rose-50 text-lg text-rose-950 disabled:opacity-50"
           onClick={() => run("votes")}
         >
           {busy === "votes" ? "Corrupting votes…" : "Mark approved + insert fake votes"}
@@ -191,7 +191,7 @@ export default function DemoPage() {
         <button
           type="button"
           disabled={busy !== null}
-          className="h-14 rounded-xl border border-rose-300 bg-rose-50 text-lg text-rose-950 disabled:opacity-50"
+          className="h-14 rounded-md border border-rose-300 bg-rose-50 text-lg text-rose-950 disabled:opacity-50"
           onClick={() => run("policy")}
         >
           {busy === "policy" ? "Corrupting policy…" : "Lower threshold to 1 in the database"}
@@ -199,7 +199,7 @@ export default function DemoPage() {
         <button
           type="button"
           disabled={busy !== null}
-          className="h-14 rounded-xl border border-zinc-300 bg-white text-lg text-zinc-800 disabled:opacity-50"
+          className="h-14 rounded-md border border-line bg-surface text-lg text-foreground disabled:opacity-50"
           onClick={() => run("undo")}
         >
           {busy === "undo" ? "Undoing…" : "Undo tampering"}
@@ -207,18 +207,18 @@ export default function DemoPage() {
       </div>
 
       {result?.kind === "votes" && (
-        <div className="flex flex-col gap-3 rounded-xl bg-teal-50/80 px-4 py-4">
+        <div className="flex flex-col gap-3 rounded-md bg-teal-50/80 px-4 py-4">
           <p className="text-xl font-medium text-teal-950">
             {result.data.fundsMoved
               ? "Unexpected: funds moved."
               : "Funds stayed held. Fake votes were ignored."}
           </p>
-          <p className="text-lg text-zinc-800">{result.data.message}</p>
-          <p className="text-base text-zinc-600">
+          <p className="text-lg text-foreground">{result.data.message}</p>
+          <p className="text-base text-muted">
             Stored status may look “approved”; authority still says no. HTTP {result.status}.
           </p>
           {result.data.rejectedVotes.length > 0 && (
-            <ul className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">
+            <ul className="rounded-md bg-rose-50 px-4 py-3 text-base text-rose-800">
               {result.data.rejectedVotes.map((v, i) => (
                 <li key={i}>
                   Ignored vote ({v.memberId}): {v.reason}
@@ -236,17 +236,17 @@ export default function DemoPage() {
       )}
 
       {result?.kind === "policy" && (
-        <div className="flex flex-col gap-3 rounded-xl bg-teal-50/80 px-4 py-4">
+        <div className="flex flex-col gap-3 rounded-md bg-teal-50/80 px-4 py-4">
           <p className="text-xl font-medium text-teal-950">
             {result.data.tamperDetected
               ? "Tampered policy detected and ignored."
               : "Policy write attempted."}
           </p>
           {result.data.tamperReason && (
-            <p className="text-lg text-zinc-800">{result.data.tamperReason}</p>
+            <p className="text-lg text-foreground">{result.data.tamperReason}</p>
           )}
           {result.data.effectiveThreshold != null && (
-            <p className="text-base text-zinc-600">
+            <p className="text-base text-muted">
               Effective threshold still {result.data.effectiveThreshold}.
             </p>
           )}
@@ -257,9 +257,9 @@ export default function DemoPage() {
       )}
 
       {result?.kind === "undo" && (
-        <div className="flex flex-col gap-2 rounded-xl bg-stone-100 px-4 py-4">
-          <p className="text-xl font-medium text-zinc-900">Tampering undone.</p>
-          <p className="text-base text-zinc-600">Forged rows removed; stored statuses restored.</p>
+        <div className="flex flex-col gap-2 rounded-md bg-stone-100 px-4 py-4">
+          <p className="text-xl font-medium text-foreground">Tampering undone.</p>
+          <p className="text-base text-muted">Forged rows removed; stored statuses restored.</p>
         </div>
       )}
     </section>

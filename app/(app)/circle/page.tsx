@@ -116,17 +116,17 @@ export default function CirclePage() {
     return (
       <section className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">Circle</h1>
-        <p className="text-lg text-zinc-700">Only the account holder or a circle member can propose rule changes.</p>
+        <p className="text-lg text-muted">Only the account holder or a circle member can propose rule changes.</p>
       </section>
     );
   }
 
   if (circle === undefined) {
-    return <p className="text-lg text-zinc-600">Loading…</p>;
+    return <p className="text-lg text-muted">Loading…</p>;
   }
 
   if (!circle) {
-    return <p className="text-lg text-zinc-600">Opening setup…</p>;
+    return <p className="text-lg text-muted">Opening setup…</p>;
   }
 
   async function onSubmit(e: FormEvent) {
@@ -171,28 +171,28 @@ export default function CirclePage() {
     <form onSubmit={onSubmit} className="flex flex-col gap-8">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">Circle</h1>
-        <p className="text-lg text-zinc-700">
+        <p className="text-lg text-muted">
           {circle.principalName}&apos;s circle (version {circle.version}). Propose changes; the current circle must
           agree.
         </p>
-        <p className="text-base text-zinc-600">
+        <p className="text-base text-muted">
           Now: {circle.policy.threshold} of {circle.policy.memberCount} must agree · everyday limit{" "}
           {money(circle.policy.dollarLimitCents)}
         </p>
         {circle.tamperDetected && (
-          <p className="rounded-xl bg-amber-50 px-4 py-3 text-base text-amber-900">
+          <p className="rounded-md bg-amber-50 px-4 py-3 text-base text-amber-900">
             Stored rules look tampered. Changes stay locked until verification is restored.
             {circle.tamperReason ? ` ${circle.tamperReason}` : ""}
           </p>
         )}
       </header>
 
-      {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
+      {error && <p className="rounded-md bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
 
       <fieldset className="flex flex-col gap-3">
         <legend className="text-xl font-semibold">People</legend>
         {people.length === 0 ? (
-          <p className="text-lg text-zinc-600">
+          <p className="text-lg text-muted">
             No candidates yet. Ask circle members to sign in once so they appear here.
           </p>
         ) : (
@@ -201,12 +201,12 @@ export default function CirclePage() {
             return (
               <label
                 key={p.id}
-                className="flex flex-col gap-2 rounded-2xl border border-teal-100 bg-white/80 px-4 py-3"
+                className="flex flex-col gap-2 rounded-md border border-line bg-surface px-4 py-3"
               >
                 <span className="flex items-center gap-3 text-lg">
                   <input
                     type="checkbox"
-                    className="size-5 accent-teal-700"
+                    className="size-5 accent-accent"
                     checked={row.on}
                     onChange={(e) =>
                       setSelected((s) => ({
@@ -217,14 +217,14 @@ export default function CirclePage() {
                   />
                   <span>
                     {p.displayName}
-                    {p.username ? <span className="text-zinc-500"> · {p.username}</span> : null}
+                    {p.username ? <span className="text-muted"> · {p.username}</span> : null}
                   </span>
                 </span>
                 {row.on && (
                   <input
                     type="text"
                     placeholder="Relationship (optional)"
-                    className="h-14 rounded-xl border border-zinc-300 px-4 text-lg"
+                    className="h-14 rounded-md border border-line px-4 text-lg"
                     value={row.relationship}
                     onChange={(e) =>
                       setSelected((s) => ({ ...s, [p.id]: { ...row, relationship: e.target.value } }))
@@ -240,7 +240,7 @@ export default function CirclePage() {
       <fieldset className="flex flex-col gap-3">
         <legend className="text-xl font-semibold">How many must agree</legend>
         <select
-          className="h-14 rounded-xl border border-zinc-300 bg-white px-4 text-lg"
+          className="h-14 rounded-md border border-line bg-surface px-4 text-lg"
           value={cappedThreshold}
           onChange={(e) => setThreshold(Number(e.target.value))}
         >
@@ -256,13 +256,13 @@ export default function CirclePage() {
 
       <fieldset className="flex flex-col gap-3">
         <legend className="text-xl font-semibold">Everyday limit</legend>
-        <p className="text-base text-zinc-600">Amounts above this are held for the circle.</p>
+        <p className="text-base text-muted">Amounts above this are held for the circle.</p>
         <div className="relative">
-          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-zinc-500">$</span>
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-muted">$</span>
           <input
             type="text"
             inputMode="decimal"
-            className="h-14 w-full rounded-xl border border-zinc-300 bg-white pl-8 pr-4 text-lg"
+            className="h-14 w-full rounded-md border border-line bg-surface pl-8 pr-4 text-lg"
             value={limitDollars}
             onChange={(e) => setLimitDollars(e.target.value)}
           />
@@ -277,7 +277,7 @@ export default function CirclePage() {
             <label key={t} className="flex items-center gap-3 text-lg">
               <input
                 type="checkbox"
-                className="size-5 accent-teal-700"
+                className="size-5 accent-accent"
                 checked={on}
                 onChange={(e) =>
                   setProtectedTypes((prev) => (e.target.checked ? [...prev, t] : prev.filter((x) => x !== t)))
@@ -291,9 +291,9 @@ export default function CirclePage() {
 
       <label className="flex flex-col gap-2">
         <span className="text-xl font-semibold">Why this change</span>
-        <p className="text-base text-zinc-600">Optional. The circle will see this on the request.</p>
+        <p className="text-base text-muted">Optional. The circle will see this on the request.</p>
         <textarea
-          className="min-h-28 rounded-xl border border-zinc-300 bg-white px-4 py-3 text-lg"
+          className="min-h-28 rounded-md border border-line bg-surface px-4 py-3 text-lg"
           value={reason}
           maxLength={500}
           onChange={(e) => setReason(e.target.value)}
@@ -303,7 +303,7 @@ export default function CirclePage() {
       <button
         type="submit"
         disabled={saving || members.length < MIN_THRESHOLD || circle.tamperDetected}
-        className="h-14 rounded-xl bg-teal-700 text-lg font-medium text-white disabled:opacity-40"
+        className="h-14 rounded-md bg-accent text-lg font-medium text-surface disabled:opacity-40"
       >
         {saving ? "Submitting…" : "Propose change"}
       </button>
