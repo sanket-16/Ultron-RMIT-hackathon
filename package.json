@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "demo:e2e": "node scripts/e2e-demo.mjs"
+    "demo:e2e": "node scripts/e2e-demo.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
