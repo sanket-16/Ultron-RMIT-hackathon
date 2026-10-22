@@ -1,11 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import type { CircleView, Decision, RequestView } from "@/lib/contracts";
 import { useGuardianAuth } from "@/lib/tidecloak/client";
 import { RequestCard } from "@/components/RequestCard";
 import { errorText, readApi } from "@/components/format";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { LoadingBlock } from "@/components/ui/LoadingBlock";
 
 export default function HomePage() {
   const { user, authFetch } = useGuardianAuth();
@@ -32,6 +34,12 @@ export default function HomePage() {
     setRequests(d.requests);
     setError(d.error);
   }, []);
+
+  const reload = useCallback(() => {
+    setCircle(undefined);
+    setError(null);
+    fetchHome().then(apply);
+  }, [fetchHome, apply]);
 
   useEffect(() => {
     if (!user) return;
@@ -65,7 +73,7 @@ export default function HomePage() {
   }
 
   if (circle === undefined) {
-    return <p className="text-lg text-muted">Loading your circle…</p>;
+    return <LoadingBlock label="Loading your circle…" />;
   }
 
   const isPrincipal = !!user?.roles.includes("principal");
@@ -76,22 +84,20 @@ export default function HomePage() {
     return (
       <section className="flex flex-col gap-4">
         <h1 className="text-3xl font-semibold tracking-tight text-foreground">Welcome</h1>
+        {error && <ErrorBanner message={error} onRetry={reload} />}
         {isPrincipal ? (
-          <>
-            <p className="text-lg text-muted">Set up your circle so trusted people can help with big decisions.</p>
-            <Link
-              href="/setup"
-              className="flex h-14 items-center justify-center rounded-xl bg-accent text-lg font-medium text-surface"
-            >
-              Set up your circle
-            </Link>
-          </>
+          <EmptyState
+            title="No circle yet"
+            body="Set up your circle so trusted people can help with big decisions."
+            actionHref="/setup"
+            actionLabel="Set up your circle"
+          />
         ) : (
-          <p className="text-lg text-muted">
-            You are not in a circle yet. Ask the account holder to add you, then refresh this page.
-          </p>
+          <EmptyState
+            title="Waiting for Margaret…"
+            body="Margaret has not set up a circle yet. Once she does, you will see requests here."
+          />
         )}
-        {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
       </section>
     );
   }
@@ -104,19 +110,20 @@ export default function HomePage() {
           {circle.principalName}&apos;s circle · {circle.policy.threshold} of {circle.policy.memberCount} must agree
         </p>
         {circle.tamperDetected && (
-          <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">
-            Stored rules look wrong. We are using the last verified rules
-            {circle.tamperReason ? `: ${circle.tamperReason}` : "."}
-          </p>
+          <ErrorBanner
+            message={`The saved rules look wrong. We are using the last trusted rules${
+              circle.tamperReason ? `: ${circle.tamperReason}` : "."
+            }`}
+          />
         )}
       </header>
 
-      {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
+      {error && <ErrorBanner message={error} onRetry={reload} />}
 
       <div className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold text-foreground">Waiting for a decision</h2>
         {pending.length === 0 ? (
-          <p className="text-lg text-muted">Nothing waiting right now.</p>
+          <EmptyState title="Nothing waiting" body="No requests need a decision right now." />
         ) : (
           pending.map((r) => (
             <div key={r.id} className="flex flex-col gap-3">
@@ -126,7 +133,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     disabled={busyId === r.id}
-                    className="h-14 flex-1 rounded-xl bg-accent text-lg font-medium text-surface disabled:opacity-50"
+                    className="h-14 flex-1 rounded-md bg-accent text-lg font-medium text-surface disabled:opacity-50"
                     onClick={() => vote(r.id, "approve")}
                   >
                     Approve
@@ -134,7 +141,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     disabled={busyId === r.id}
-                    className="h-14 flex-1 rounded-xl bg-foreground text-lg font-medium text-surface disabled:opacity-50"
+                    className="h-14 flex-1 rounded-md bg-foreground text-lg font-medium text-surface disabled:opacity-50"
                     onClick={() => vote(r.id, "decline")}
                   >
                     Decline
@@ -149,7 +156,7 @@ export default function HomePage() {
       <div className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold text-foreground">Recent</h2>
         {recent.length === 0 ? (
-          <p className="text-lg text-muted">No earlier requests yet.</p>
+          <EmptyState title="No earlier requests" body="Finished requests will show up here." />
         ) : (
           recent.map((r) => <RequestCard key={r.id} request={r} />)
         )}
