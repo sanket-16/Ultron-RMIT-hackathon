@@ -52,7 +52,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navItems: { href: string; label: string }[] = [
     { href: "/home", label: "Home" },
     ...(showNewRequest ? [{ href: "/requests/new", label: "New request" }] : []),
+    ...(circle != null ? [{ href: "/circle", label: "Circle" }] : []),
     { href: "/audit", label: "Audit" },
+    { href: "/demo", label: "Demo" },
     ...(isPrincipal ? [{ href: "/setup", label: "Setup" }] : []),
   ];
 
