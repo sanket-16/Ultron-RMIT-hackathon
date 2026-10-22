@@ -5,6 +5,9 @@ import type { Decision, RequestView } from "@/lib/contracts";
 import { useGuardianAuth } from "@/lib/tidecloak/client";
 import { StatusBadge } from "@/components/StatusBadge";
 import { errorText, formatWhen, money, readApi, REQUEST_TYPE_LABELS } from "@/components/format";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { LoadingBlock } from "@/components/ui/LoadingBlock";
 
 type Outcome = "held" | "success" | "fail";
 
@@ -35,6 +38,15 @@ export default function RequestDetailPage({ params }: { params: Promise<{ id: st
     }
     return { request: parsed.data.request, error: null as string | null };
   }, [authFetch, id]);
+
+  const reload = useCallback(() => {
+    setRequest(undefined);
+    setError(null);
+    fetchRequest().then((d) => {
+      setRequest(d.request);
+      setError(d.error);
+    });
+  }, [fetchRequest]);
 
   useEffect(() => {
     let alive = true;
@@ -69,14 +81,23 @@ export default function RequestDetailPage({ params }: { params: Promise<{ id: st
   }
 
   if (request === undefined) {
-    return <p className="text-lg text-zinc-600">Loading request…</p>;
+    return <LoadingBlock label="Loading request…" />;
   }
 
   if (!request) {
     return (
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-4">
         <h1 className="text-3xl font-semibold tracking-tight">Request</h1>
-        {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
+        {error ? (
+          <ErrorBanner message={error} onRetry={reload} />
+        ) : (
+          <EmptyState
+            title="Request not found"
+            body="It may have been removed, or you may not have access."
+            actionHref="/home"
+            actionLabel="Back to home"
+          />
+        )}
       </section>
     );
   }
@@ -97,7 +118,7 @@ export default function RequestDetailPage({ params }: { params: Promise<{ id: st
         <p className="text-lg text-teal-800">{request.authority.reason}</p>
       </header>
 
-      {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
+      {error && <ErrorBanner message={error} onRetry={reload} />}
 
       <div className="flex flex-col gap-2">
         <h2 className="text-2xl font-semibold text-zinc-900">{request.title}</h2>
@@ -133,13 +154,11 @@ export default function RequestDetailPage({ params }: { params: Promise<{ id: st
       )}
 
       {request.authority.rejectedVotes.length > 0 && (
-        <ul className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">
-          {request.authority.rejectedVotes.map((v, i) => (
-            <li key={i}>
-              Ignored vote ({v.memberId}): {v.reason}
-            </li>
-          ))}
-        </ul>
+        <ErrorBanner
+          message={request.authority.rejectedVotes
+            .map((v) => `A vote from ${v.memberId} was ignored: ${v.reason}`)
+            .join(" ")}
+        />
       )}
 
       {request.myVote && (

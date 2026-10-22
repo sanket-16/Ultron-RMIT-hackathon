@@ -1,17 +1,22 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import type { RequestType, RequestView } from "@/lib/contracts";
+import type { CircleView, RequestType, RequestView } from "@/lib/contracts";
 import { RequestType as RequestTypeEnum } from "@/lib/contracts";
 import { useGuardianAuth } from "@/lib/tidecloak/client";
 import { errorText, readApi, REQUEST_TYPE_LABELS } from "@/components/format";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { LoadingBlock } from "@/components/ui/LoadingBlock";
 
 const TYPES = RequestTypeEnum.options;
 
 export default function NewRequestPage() {
-  const { authFetch } = useGuardianAuth();
+  const { user, authFetch } = useGuardianAuth();
   const router = useRouter();
+  const [circle, setCircle] = useState<CircleView | null | undefined>(undefined);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [type, setType] = useState<RequestType>("large_withdrawal");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -19,6 +24,44 @@ export default function NewRequestPage() {
   const [payee, setPayee] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const isPrincipal = !!user?.roles.includes("principal");
+  const canRequest =
+    !!user &&
+    (user.roles.includes("principal") ||
+      user.roles.includes("circle_member") ||
+      user.roles.includes("requester"));
+
+  const loadCircle = useCallback(async () => {
+    const res = await authFetch("/api/circle");
+    const parsed = await readApi<{ circle: CircleView | null }>(res);
+    if (!parsed.ok) {
+      return { circle: null as CircleView | null, error: errorText(parsed.error, parsed.details) };
+    }
+    return { circle: parsed.data.circle, error: null as string | null };
+  }, [authFetch]);
+
+  const reload = useCallback(() => {
+    setCircle(undefined);
+    setLoadError(null);
+    loadCircle().then((d) => {
+      setCircle(d.circle);
+      setLoadError(d.error);
+    });
+  }, [loadCircle]);
+
+  useEffect(() => {
+    if (!user) return;
+    let alive = true;
+    loadCircle().then((d) => {
+      if (!alive) return;
+      setCircle(d.circle);
+      setLoadError(d.error);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [user, loadCircle]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -60,6 +103,56 @@ export default function NewRequestPage() {
     }
   }
 
+  if (circle === undefined) {
+    return <LoadingBlock label="Checking your circle…" />;
+  }
+
+  if (loadError) {
+    return (
+      <section className="flex flex-col gap-4">
+        <h1 className="text-3xl font-semibold tracking-tight">New request</h1>
+        <ErrorBanner message={loadError} onRetry={reload} />
+      </section>
+    );
+  }
+
+  if (!circle) {
+    return (
+      <section className="flex flex-col gap-4">
+        <h1 className="text-3xl font-semibold tracking-tight">New request</h1>
+        {isPrincipal ? (
+          <EmptyState
+            title="Set up your circle first"
+            body="You need a circle before anyone can send a request."
+            actionHref="/setup"
+            actionLabel="Set up your circle"
+          />
+        ) : (
+          <EmptyState
+            title="Waiting for Margaret…"
+            body="Margaret has not set up a circle yet. You can send a request once she has."
+            actionHref="/home"
+            actionLabel="Back to home"
+          />
+        )}
+      </section>
+    );
+  }
+
+  if (!canRequest) {
+    return (
+      <section className="flex flex-col gap-4">
+        <h1 className="text-3xl font-semibold tracking-tight">New request</h1>
+        <EmptyState
+          title="You cannot send requests"
+          body="Ask Margaret to add you to the circle if you need to send one."
+          actionHref="/home"
+          actionLabel="Back to home"
+        />
+      </section>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-6">
       <header className="flex flex-col gap-2">
@@ -67,10 +160,10 @@ export default function NewRequestPage() {
         <p className="text-lg text-zinc-700">Ask clearly. The circle will see what you write here.</p>
       </header>
 
-      {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
+      {error && <ErrorBanner message={error} />}
 
       <label className="flex flex-col gap-2">
-        <span className="text-base font-medium text-zinc-800">Type</span>
+        <span className="text-base font-medium text-zinc-800">What kind of request</span>
         <select
           className="h-14 rounded-xl border border-zinc-300 bg-white px-4 text-lg"
           value={type}
@@ -85,7 +178,7 @@ export default function NewRequestPage() {
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-base font-medium text-zinc-800">Title</span>
+        <span className="text-base font-medium text-zinc-800">Short title</span>
         <input
           className="h-14 rounded-xl border border-zinc-300 bg-white px-4 text-lg"
           value={title}
@@ -97,7 +190,7 @@ export default function NewRequestPage() {
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-base font-medium text-zinc-800">Details (optional)</span>
+        <span className="text-base font-medium text-zinc-800">More detail (optional)</span>
         <textarea
           className="min-h-28 rounded-xl border border-zinc-300 bg-white px-4 py-3 text-lg"
           value={description}
@@ -122,7 +215,7 @@ export default function NewRequestPage() {
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-base font-medium text-zinc-800">Payee (optional)</span>
+        <span className="text-base font-medium text-zinc-800">Who gets paid (optional)</span>
         <input
           className="h-14 rounded-xl border border-zinc-300 bg-white px-4 text-lg"
           value={payee}

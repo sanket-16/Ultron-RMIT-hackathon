@@ -6,6 +6,9 @@ import type { CircleView, RequestType, UserSummary } from "@/lib/contracts";
 import { MIN_THRESHOLD, RequestType as RequestTypeEnum } from "@/lib/contracts";
 import { useGuardianAuth } from "@/lib/tidecloak/client";
 import { errorText, money, readApi, REQUEST_TYPE_LABELS } from "@/components/format";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { LoadingBlock } from "@/components/ui/LoadingBlock";
 
 const ALL_TYPES = RequestTypeEnum.options;
 
@@ -44,6 +47,23 @@ export default function SetupPage() {
     return { circle: c.data.circle, candidates: k.data.candidates ?? [], error: null as string | null };
   }, [authFetch]);
 
+  const reload = useCallback(() => {
+    setCircle(undefined);
+    setError(null);
+    fetchSetup().then((d) => {
+      setCircle(d.circle);
+      setCandidates(d.candidates);
+      setError(d.error);
+      setSelected((prev) => {
+        const next = { ...prev };
+        for (const cand of d.candidates) {
+          if (!next[cand.id]) next[cand.id] = { on: false, relationship: "" };
+        }
+        return next;
+      });
+    });
+  }, [fetchSetup]);
+
   useEffect(() => {
     if (!user || !isPrincipal) return;
     let alive = true;
@@ -81,15 +101,20 @@ export default function SetupPage() {
 
   if (!isPrincipal) {
     return (
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-4">
         <h1 className="text-3xl font-semibold tracking-tight">Circle setup</h1>
-        <p className="text-lg text-zinc-700">Only the account holder can set up the circle.</p>
+        <EmptyState
+          title="Only Margaret can set this up"
+          body="Ask the account holder to choose the circle. You can come back here once they invite you."
+          actionHref="/home"
+          actionLabel="Back to home"
+        />
       </section>
     );
   }
 
   if (circle === undefined) {
-    return <p className="text-lg text-zinc-600">Loading…</p>;
+    return <LoadingBlock label="Loading setup…" />;
   }
 
   if (circle) {
@@ -97,8 +122,8 @@ export default function SetupPage() {
       <section className="flex flex-col gap-4">
         <h1 className="text-3xl font-semibold tracking-tight">Circle already set</h1>
         <p className="text-lg text-zinc-700">
-          {circle.principalName}&apos;s circle is active (version {circle.version}). Changes go through a circle
-          proposal, not this screen.
+          {circle.principalName}&apos;s circle is active. To change people or rules, send a circle change request
+          for the group to approve.
         </p>
         <p className="text-base text-zinc-600">
           {circle.policy.threshold} of {circle.policy.memberCount} must agree · everyday limit{" "}
@@ -158,14 +183,15 @@ export default function SetupPage() {
         <p className="text-lg text-zinc-700">Choose who you trust. Big decisions wait until enough of them agree.</p>
       </header>
 
-      {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
+      {error && <ErrorBanner message={error} onRetry={reload} />}
 
       <fieldset className="flex flex-col gap-3">
         <legend className="text-xl font-semibold">People</legend>
         {candidates.length === 0 ? (
-          <p className="text-lg text-zinc-600">
-            No candidates yet. Ask circle members to sign in once so they appear here.
-          </p>
+          <EmptyState
+            title="No one to pick yet"
+            body="Ask your trusted people to sign in once. Then they will show up here."
+          />
         ) : (
           candidates.map((c) => {
             const row = selected[c.id] ?? { on: false, relationship: "" };
@@ -174,10 +200,10 @@ export default function SetupPage() {
                 key={c.id}
                 className="flex flex-col gap-2 rounded-2xl border border-teal-100 bg-white/80 px-4 py-3"
               >
-                <span className="flex items-center gap-3 text-lg">
+                <span className="flex min-h-14 items-center gap-3 text-lg">
                   <input
                     type="checkbox"
-                    className="size-5 accent-teal-700"
+                    className="size-6 accent-teal-700"
                     checked={row.on}
                     onChange={(e) =>
                       setSelected((s) => ({ ...s, [c.id]: { ...row, on: e.target.checked } }))
@@ -191,7 +217,7 @@ export default function SetupPage() {
                 {row.on && (
                   <input
                     type="text"
-                    placeholder="Relationship (optional)"
+                    placeholder="How you know them (optional)"
                     className="h-14 rounded-xl border border-zinc-300 px-4 text-lg"
                     value={row.relationship}
                     onChange={(e) =>
@@ -224,7 +250,7 @@ export default function SetupPage() {
 
       <fieldset className="flex flex-col gap-3">
         <legend className="text-xl font-semibold">Everyday limit</legend>
-        <p className="text-base text-zinc-600">Amounts above this are held for the circle.</p>
+        <p className="text-base text-zinc-600">Amounts above this wait for the circle.</p>
         <div className="relative">
           <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-zinc-500">$</span>
           <input
@@ -238,14 +264,14 @@ export default function SetupPage() {
       </fieldset>
 
       <fieldset className="flex flex-col gap-3">
-        <legend className="text-xl font-semibold">Always held types</legend>
+        <legend className="text-xl font-semibold">Always needs agreement</legend>
         {ALL_TYPES.map((t) => {
           const on = protectedTypes.includes(t);
           return (
-            <label key={t} className="flex items-center gap-3 text-lg">
+            <label key={t} className="flex min-h-14 items-center gap-3 text-lg">
               <input
                 type="checkbox"
-                className="size-5 accent-teal-700"
+                className="size-6 accent-teal-700"
                 checked={on}
                 onChange={(e) =>
                   setProtectedTypes((prev) => (e.target.checked ? [...prev, t] : prev.filter((x) => x !== t)))
