@@ -14,6 +14,8 @@ Open `http://localhost:3000/signin`, then use **`/home`** (and `/setup`, `/demo`
 
 **Judge walkthrough:** [docs/DEMO.md](docs/DEMO.md) — seed story, $80k decline, DB tamper, care-home approve, and `npm run demo:e2e`.
 
+**Full project context** (done / left, how it works, conventions): [docs/CONTEXT.md](docs/CONTEXT.md).
+
 For real TideCloak, see [docs/tidecloak-setup.md](docs/tidecloak-setup.md). The API for the UI is in [docs/api-contracts.md](docs/api-contracts.md).
 
 ## How the authority works
