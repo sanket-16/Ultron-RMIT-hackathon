@@ -8,6 +8,7 @@ import { useGuardianAuth } from "@/lib/tidecloak/client";
 const NAV = [
   { href: "/home", label: "Home" },
   { href: "/requests/new", label: "New request" },
+  { href: "/circle", label: "Circle" },
   { href: "/audit", label: "Audit" },
 ] as const;
 
