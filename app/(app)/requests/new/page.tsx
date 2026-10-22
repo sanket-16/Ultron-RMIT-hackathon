@@ -64,15 +64,15 @@ export default function NewRequestPage() {
     <form onSubmit={onSubmit} className="flex flex-col gap-6">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">New request</h1>
-        <p className="text-lg text-zinc-700">Ask clearly. The circle will see what you write here.</p>
+        <p className="text-lg text-muted">Ask clearly. The circle will see what you write here.</p>
       </header>
 
       {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
 
       <label className="flex flex-col gap-2">
-        <span className="text-base font-medium text-zinc-800">Type</span>
+        <span className="text-base font-medium text-foreground">Type</span>
         <select
-          className="h-14 rounded-xl border border-zinc-300 bg-white px-4 text-lg"
+          className="h-14 rounded-xl border border-line bg-surface px-4 text-lg"
           value={type}
           onChange={(e) => setType(e.target.value as RequestType)}
         >
@@ -85,9 +85,9 @@ export default function NewRequestPage() {
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-base font-medium text-zinc-800">Title</span>
+        <span className="text-base font-medium text-foreground">Title</span>
         <input
-          className="h-14 rounded-xl border border-zinc-300 bg-white px-4 text-lg"
+          className="h-14 rounded-xl border border-line bg-surface px-4 text-lg"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={120}
@@ -97,9 +97,9 @@ export default function NewRequestPage() {
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-base font-medium text-zinc-800">Details (optional)</span>
+        <span className="text-base font-medium text-foreground">Details (optional)</span>
         <textarea
-          className="min-h-28 rounded-xl border border-zinc-300 bg-white px-4 py-3 text-lg"
+          className="min-h-28 rounded-xl border border-line bg-surface px-4 py-3 text-lg"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           maxLength={1000}
@@ -107,13 +107,13 @@ export default function NewRequestPage() {
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-base font-medium text-zinc-800">Amount (optional)</span>
+        <span className="text-base font-medium text-foreground">Amount (optional)</span>
         <div className="relative">
-          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-zinc-500">$</span>
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-muted">$</span>
           <input
             type="text"
             inputMode="decimal"
-            className="h-14 w-full rounded-xl border border-zinc-300 bg-white pl-8 pr-4 text-lg"
+            className="h-14 w-full rounded-xl border border-line bg-surface pl-8 pr-4 text-lg"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="12000"
@@ -122,9 +122,9 @@ export default function NewRequestPage() {
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-base font-medium text-zinc-800">Payee (optional)</span>
+        <span className="text-base font-medium text-foreground">Payee (optional)</span>
         <input
-          className="h-14 rounded-xl border border-zinc-300 bg-white px-4 text-lg"
+          className="h-14 rounded-xl border border-line bg-surface px-4 text-lg"
           value={payee}
           onChange={(e) => setPayee(e.target.value)}
           maxLength={120}
@@ -135,7 +135,7 @@ export default function NewRequestPage() {
       <button
         type="submit"
         disabled={saving}
-        className="h-14 rounded-xl bg-teal-700 text-lg font-medium text-white disabled:opacity-50"
+        className="h-14 rounded-xl bg-accent text-lg font-medium text-surface disabled:opacity-50"
       >
         {saving ? "Sending…" : "Send request"}
       </button>

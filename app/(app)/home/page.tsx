@@ -65,7 +65,7 @@ export default function HomePage() {
   }
 
   if (circle === undefined) {
-    return <p className="text-lg text-zinc-600">Loading your circle…</p>;
+    return <p className="text-lg text-muted">Loading your circle…</p>;
   }
 
   const isPrincipal = !!user?.roles.includes("principal");
@@ -75,19 +75,19 @@ export default function HomePage() {
   if (!circle) {
     return (
       <section className="flex flex-col gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">Welcome</h1>
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Welcome</h1>
         {isPrincipal ? (
           <>
-            <p className="text-lg text-zinc-700">Set up your circle so trusted people can help with big decisions.</p>
+            <p className="text-lg text-muted">Set up your circle so trusted people can help with big decisions.</p>
             <Link
               href="/setup"
-              className="flex h-14 items-center justify-center rounded-xl bg-teal-700 text-lg font-medium text-white"
+              className="flex h-14 items-center justify-center rounded-xl bg-accent text-lg font-medium text-surface"
             >
               Set up your circle
             </Link>
           </>
         ) : (
-          <p className="text-lg text-zinc-700">
+          <p className="text-lg text-muted">
             You are not in a circle yet. Ask the account holder to add you, then refresh this page.
           </p>
         )}
@@ -99,8 +99,8 @@ export default function HomePage() {
   return (
     <section className="flex flex-col gap-8">
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">Home</h1>
-        <p className="text-lg text-zinc-700">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Home</h1>
+        <p className="text-lg text-muted">
           {circle.principalName}&apos;s circle · {circle.policy.threshold} of {circle.policy.memberCount} must agree
         </p>
         {circle.tamperDetected && (
@@ -114,9 +114,9 @@ export default function HomePage() {
       {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
 
       <div className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold text-zinc-900">Waiting for a decision</h2>
+        <h2 className="text-xl font-semibold text-foreground">Waiting for a decision</h2>
         {pending.length === 0 ? (
-          <p className="text-lg text-zinc-600">Nothing waiting right now.</p>
+          <p className="text-lg text-muted">Nothing waiting right now.</p>
         ) : (
           pending.map((r) => (
             <div key={r.id} className="flex flex-col gap-3">
@@ -126,7 +126,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     disabled={busyId === r.id}
-                    className="h-14 flex-1 rounded-xl bg-teal-700 text-lg font-medium text-white disabled:opacity-50"
+                    className="h-14 flex-1 rounded-xl bg-accent text-lg font-medium text-surface disabled:opacity-50"
                     onClick={() => vote(r.id, "approve")}
                   >
                     Approve
@@ -134,7 +134,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     disabled={busyId === r.id}
-                    className="h-14 flex-1 rounded-xl bg-zinc-800 text-lg font-medium text-white disabled:opacity-50"
+                    className="h-14 flex-1 rounded-xl bg-foreground text-lg font-medium text-surface disabled:opacity-50"
                     onClick={() => vote(r.id, "decline")}
                   >
                     Decline
@@ -147,9 +147,9 @@ export default function HomePage() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold text-zinc-900">Recent</h2>
+        <h2 className="text-xl font-semibold text-foreground">Recent</h2>
         {recent.length === 0 ? (
-          <p className="text-lg text-zinc-600">No earlier requests yet.</p>
+          <p className="text-lg text-muted">No earlier requests yet.</p>
         ) : (
           recent.map((r) => <RequestCard key={r.id} request={r} />)
         )}

@@ -83,28 +83,28 @@ export default function SetupPage() {
     return (
       <section className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">Circle setup</h1>
-        <p className="text-lg text-zinc-700">Only the account holder can set up the circle.</p>
+        <p className="text-lg text-muted">Only the account holder can set up the circle.</p>
       </section>
     );
   }
 
   if (circle === undefined) {
-    return <p className="text-lg text-zinc-600">Loading…</p>;
+    return <p className="text-lg text-muted">Loading…</p>;
   }
 
   if (circle) {
     return (
       <section className="flex flex-col gap-4">
         <h1 className="text-3xl font-semibold tracking-tight">Circle already set</h1>
-        <p className="text-lg text-zinc-700">
+        <p className="text-lg text-muted">
           {circle.principalName}&apos;s circle is active (version {circle.version}). Changes go through a circle
           proposal, not this screen.
         </p>
-        <p className="text-base text-zinc-600">
+        <p className="text-base text-muted">
           {circle.policy.threshold} of {circle.policy.memberCount} must agree · everyday limit{" "}
           {money(circle.policy.dollarLimitCents)}
         </p>
-        <ul className="flex flex-col gap-2 text-lg text-zinc-800">
+        <ul className="flex flex-col gap-2 text-lg text-foreground">
           {circle.members.map((m) => (
             <li key={m.memberId}>
               {m.displayName}
@@ -155,7 +155,7 @@ export default function SetupPage() {
     <form onSubmit={onSubmit} className="flex flex-col gap-8">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">Set up your circle</h1>
-        <p className="text-lg text-zinc-700">Choose who you trust. Big decisions wait until enough of them agree.</p>
+        <p className="text-lg text-muted">Choose who you trust. Big decisions wait until enough of them agree.</p>
       </header>
 
       {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-base text-rose-800">{error}</p>}
@@ -163,7 +163,7 @@ export default function SetupPage() {
       <fieldset className="flex flex-col gap-3">
         <legend className="text-xl font-semibold">People</legend>
         {candidates.length === 0 ? (
-          <p className="text-lg text-zinc-600">
+          <p className="text-lg text-muted">
             No candidates yet. Ask circle members to sign in once so they appear here.
           </p>
         ) : (
@@ -172,12 +172,12 @@ export default function SetupPage() {
             return (
               <label
                 key={c.id}
-                className="flex flex-col gap-2 rounded-2xl border border-teal-100 bg-white/80 px-4 py-3"
+                className="flex flex-col gap-2 rounded-2xl border border-line bg-surface px-4 py-3"
               >
                 <span className="flex items-center gap-3 text-lg">
                   <input
                     type="checkbox"
-                    className="size-5 accent-teal-700"
+                    className="size-5 accent-accent"
                     checked={row.on}
                     onChange={(e) =>
                       setSelected((s) => ({ ...s, [c.id]: { ...row, on: e.target.checked } }))
@@ -185,14 +185,14 @@ export default function SetupPage() {
                   />
                   <span>
                     {c.displayName}
-                    <span className="text-zinc-500"> · {c.username}</span>
+                    <span className="text-muted"> · {c.username}</span>
                   </span>
                 </span>
                 {row.on && (
                   <input
                     type="text"
                     placeholder="Relationship (optional)"
-                    className="h-14 rounded-xl border border-zinc-300 px-4 text-lg"
+                    className="h-14 rounded-xl border border-line px-4 text-lg"
                     value={row.relationship}
                     onChange={(e) =>
                       setSelected((s) => ({ ...s, [c.id]: { ...row, relationship: e.target.value } }))
@@ -208,7 +208,7 @@ export default function SetupPage() {
       <fieldset className="flex flex-col gap-3">
         <legend className="text-xl font-semibold">How many must agree</legend>
         <select
-          className="h-14 rounded-xl border border-zinc-300 bg-white px-4 text-lg"
+          className="h-14 rounded-xl border border-line bg-surface px-4 text-lg"
           value={cappedThreshold}
           onChange={(e) => setThreshold(Number(e.target.value))}
         >
@@ -224,13 +224,13 @@ export default function SetupPage() {
 
       <fieldset className="flex flex-col gap-3">
         <legend className="text-xl font-semibold">Everyday limit</legend>
-        <p className="text-base text-zinc-600">Amounts above this are held for the circle.</p>
+        <p className="text-base text-muted">Amounts above this are held for the circle.</p>
         <div className="relative">
-          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-zinc-500">$</span>
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-muted">$</span>
           <input
             type="text"
             inputMode="decimal"
-            className="h-14 w-full rounded-xl border border-zinc-300 bg-white pl-8 pr-4 text-lg"
+            className="h-14 w-full rounded-xl border border-line bg-surface pl-8 pr-4 text-lg"
             value={limitDollars}
             onChange={(e) => setLimitDollars(e.target.value)}
           />
@@ -245,7 +245,7 @@ export default function SetupPage() {
             <label key={t} className="flex items-center gap-3 text-lg">
               <input
                 type="checkbox"
-                className="size-5 accent-teal-700"
+                className="size-5 accent-accent"
                 checked={on}
                 onChange={(e) =>
                   setProtectedTypes((prev) => (e.target.checked ? [...prev, t] : prev.filter((x) => x !== t)))
@@ -260,7 +260,7 @@ export default function SetupPage() {
       <button
         type="submit"
         disabled={saving || members.length < MIN_THRESHOLD}
-        className="h-14 rounded-xl bg-teal-700 text-lg font-medium text-white disabled:opacity-40"
+        className="h-14 rounded-xl bg-accent text-lg font-medium text-surface disabled:opacity-40"
       >
         {saving ? "Saving…" : "Create circle"}
       </button>
