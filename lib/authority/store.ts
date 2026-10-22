@@ -98,6 +98,9 @@ export interface AuthorityStore {
    * Used by /api/demo/tamper to prove that editing rows does nothing.
    */
   rawTamper(fn: (data: RawData) => void): Promise<void>;
+
+  /** DEMO ONLY: wipe all authority data so the judge script can start clean. */
+  clearAll(): Promise<void>;
 }
 
 export type RawData = {
@@ -177,6 +180,14 @@ class MemoryStore implements AuthorityStore {
   }
   async rawTamper(fn: (data: RawData) => void) {
     fn({ policies: this.policies, requests: this.requests, votes: this.votes });
+  }
+  async clearAll() {
+    this.users.clear();
+    this.policies = [];
+    this.requests = [];
+    this.votes = [];
+    this.audit = [];
+    this.payments = [];
   }
 }
 

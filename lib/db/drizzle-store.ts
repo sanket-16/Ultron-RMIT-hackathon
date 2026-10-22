@@ -325,6 +325,17 @@ export class DrizzleAuthorityStore implements AuthorityStore {
       }
     }
   }
+
+  async clearAll(): Promise<void> {
+    const db = this.db();
+    // Child-ish tables first (no FKs declared, but keep a safe order).
+    await db.delete(votes);
+    await db.delete(payments);
+    await db.delete(auditEvents);
+    await db.delete(requests);
+    await db.delete(policyVersions);
+    await db.delete(users);
+  }
 }
 
 function policyKey(p: Pick<PolicyVersionRecord, "circleId" | "version">): string {
