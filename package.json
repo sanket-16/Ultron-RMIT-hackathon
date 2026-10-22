@@ -10,8 +10,10 @@
     "demo:e2e": "node scripts/e2e-demo.mjs"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.2.0",
     "@tidecloak/nextjs": "^0.14.40",
     "@tidecloak/verify": "^0.14.33",
+    "drizzle-orm": "^0.45.4",
     "jose": "^5.10.0",
     "next": "16.4.2",
     "react": "19.3.0",
@@ -23,6 +25,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^18.0.8",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
     "tailwindcss": "^4",
