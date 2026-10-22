@@ -6,12 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "demo:e2e": "node scripts/e2e-demo.mjs"
   },
   "dependencies": {
+    "@tidecloak/nextjs": "^0.14.40",
+    "@tidecloak/verify": "^0.14.33",
+    "jose": "^5.10.0",
     "next": "16.4.2",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
