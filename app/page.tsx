@@ -13,41 +13,35 @@ export default function Home() {
           <div className="absolute inset-0 -z-20 overflow-hidden">
             <Image
               src="/hero-home.jpg"
-              alt="Sunlit living room — a calm home waiting for careful decisions"
+              alt="A calm home — big decisions stay with the people who live there"
               fill
               priority
               sizes="100vw"
-              className="hero-drift object-cover object-[68%_40%]"
+              className="hero-drift object-cover object-[78%_42%] sm:object-[82%_40%]"
             />
           </div>
 
+          {/* Always-on wash so brand + copy never sit on raw photo */}
+          <div className="hero-veil absolute inset-0 -z-10 hidden sm:block" aria-hidden />
+          <div className="hero-veil-mobile absolute inset-0 -z-10 sm:hidden" aria-hidden />
           <div
-            className="hero-veil absolute inset-0 -z-10 hidden sm:block"
+            className="pointer-events-none absolute inset-y-0 left-0 -z-10 w-full max-w-2xl bg-background/40 sm:max-w-[52%]"
             aria-hidden
           />
           <div
-            className="hero-veil-mobile absolute inset-0 -z-10 sm:hidden"
-            aria-hidden
-          />
-          <div
-            className="hero-grain pointer-events-none absolute inset-0 -z-10 opacity-[0.07] mix-blend-multiply"
-            aria-hidden
-          />
-
-          <div
-            className="soft-breathe pointer-events-none absolute -left-24 top-1/4 h-72 w-72 rounded-full bg-accent-soft/50 blur-3xl"
+            className="hero-grain pointer-events-none absolute inset-0 -z-10 opacity-[0.05] mix-blend-multiply"
             aria-hidden
           />
 
           <div className="mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col justify-end px-6 pb-16 pt-24 sm:justify-center sm:px-10 sm:pb-24 sm:pt-20">
-            <div className="max-w-xl">
+            <div className="max-w-lg">
               <p className="hero-rise font-display text-[clamp(2.75rem,8vw,5.25rem)] leading-[0.95] tracking-[-0.03em] text-foreground">
                 Guardian Circle
               </p>
-              <h1 className="hero-rise hero-rise-delay-1 mt-6 max-w-md font-display text-[clamp(1.35rem,3.2vw,1.85rem)] font-medium leading-snug tracking-[-0.015em] text-foreground/90">
+              <h1 className="hero-rise hero-rise-delay-1 mt-6 max-w-md font-display text-[clamp(1.35rem,3.2vw,1.85rem)] font-medium leading-snug tracking-[-0.015em] text-foreground">
                 Big decisions wait for the people you trust.
               </h1>
-              <p className="hero-rise hero-rise-delay-2 mt-4 max-w-md text-base leading-relaxed text-muted sm:text-lg">
+              <p className="hero-rise hero-rise-delay-2 mt-4 max-w-md text-base leading-relaxed text-foreground/80 sm:text-lg">
                 Before money moves or life changes stick, Margaret’s circle must
                 agree.
               </p>
@@ -60,7 +54,7 @@ export default function Home() {
                 </Link>
                 <a
                   href="#how"
-                  className="text-[0.95rem] font-medium text-foreground/80 underline decoration-line underline-offset-[0.35em] transition-colors hover:text-accent"
+                  className="text-[0.95rem] font-medium text-foreground underline decoration-line underline-offset-[0.35em] transition-colors hover:text-accent"
                 >
                   How it works
                 </a>
